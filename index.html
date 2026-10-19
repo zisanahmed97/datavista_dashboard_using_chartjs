@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Analytics Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <span>DataVista</span>
+        </div>
+
+        <p class="menu-label">MAIN MENU</p>
+
+        <nav class="navigation">
+            <a href="#overview" class="nav-link active">
+                <i class="fa-solid fa-house"></i>
+                <span>Overview</span>
+            </a>
+            <a href="#analytics" class="nav-link">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="#sales" class="nav-link">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span>Sales Report</span>
+            </a>
+            <a href="#products" class="nav-link">
+                <i class="fa-solid fa-box"></i>
+                <span>Products</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="help-card">
+                <div class="help-icon">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <h4>Need help?</h4>
+                <p>Explore your dashboard and understand your business data.</p>
+                <a href="#insights">View insights <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="profile">
+                <div class="avatar">ZA</div>
+                <div class="profile-info">
+                    <strong>Md. Zisan Ahmed</strong>
+                    <span>Data Analyst</span>
+                </div>
+                <i class="fa-solid fa-ellipsis"></i>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="overview">
+
+        <!-- Header -->
+        <header class="topbar">
+            <div>
+                <div class="breadcrumb">Dashboard / <span>Overview</span></div>
+                <h1>Sales Overview</h1>
+                <p class="page-subtitle">Track your sales performance and business growth.</p>
+            </div>
+
+            <div class="header-actions">
+                <div class="date-badge">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span id="currentDate">Today</span>
+                </div>
+                <button class="export-btn" id="exportBtn">
+                    <i class="fa-solid fa-download"></i>
+                    Export CSV
+                </button>
+            </div>
+        </header>
+
+        <!-- Filter -->
+        <section class="filter-bar">
+            <div>
+                <span class="filter-title">Performance Overview</span>
+                <span class="filter-description">Your key business metrics at a glance</span>
+            </div>
+
+            <div class="filter-control">
+                <i class="fa-solid fa-calendar-days"></i>
+                <select id="periodFilter" aria-label="Select time period">
+                    <option value="all">All Months</option>
+                    <option value="first2">First 2 Months</option>
+                    <option value="last2">Last 2 Months</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- KPI Cards -->
+        <section class="stats-grid">
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+                    <span class="stat-tag">Sales</span>
+                </div>
+                <p class="stat-label">Total Sales</p>
+                <h2 id="totalSales">$0</h2>
+                <div class="stat-footer">
+                    <span class="footer-note">Across selected months</span>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-chart-column"></i>
+                    </div>
+                    <span class="stat-tag">Average</span>
+                </div>
+                <p class="stat-label">Average Monthly Sales</p>
+                <h2 id="avgSales">$0</h2>
+                <div class="stat-footer">
+                    <span class="footer-note">Per selected month</span>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                    <span class="stat-tag">Performance</span>
+                </div>
+                <p class="stat-label">Best Performing Month</p>
+                <h2 id="bestMonth">--</h2>
+                <div class="stat-footer">
+                    <span class="footer-note" id="bestMonthValue">Highest sales</span>
+                </div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <span class="stat-tag">Growth</span>
+                </div>
+                <p class="stat-label">Period Growth</p>
+                <h2 id="growthRate">--</h2>
+                <div class="stat-footer">
+                    <span class="footer-note">First vs. last selected month</span>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- Charts Row 1 -->
+        <section class="charts-grid" id="analytics">
+
+            <article class="panel main-chart-panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Sales Performance</h3>
+                        <p>Monthly revenue trend</p>
+                    </div>
+                    <span class="chart-badge">
+                        <i class="fa-solid fa-chart-line"></i> Trend
+                    </span>
+                </div>
+
+                <div class="chart-legend">
+                    <span class="legend-dot purple-dot"></span>
+                    <span>Monthly Sales</span>
+                </div>
+
+                <div class="chart-container line-container">
+                    <canvas id="salesLineChart"></canvas>
+                </div>
+            </article>
+
+            <article class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h3>Sales Distribution</h3>
+                        <p>Share of total revenue</p>
+                    </div>
+                    <i class="fa-solid fa-ellipsis panel-menu"></i>
+                </div>
+
+                <div class="chart-container doughnut-container">
+                    <canvas id="salesDoughnutChart"></canvas>
+                </div>
+
+                <div class="distribution-legend" id="distributionLegend"></div>
+            </article>
+
+        </section>
+
+        <!-- Charts Row 2 -->
+        <section class="charts-grid second-row">
+
+            <article class="panel" id="products">
+                <div class="panel-header">
+                    <div>
+                        <h3>Monthly Comparison</h3>
+                        <p>Compare revenue across months</p>
+                    </div>
+                    <span class="small-badge">Revenue</span>
+                </div>
+
+                <div class="chart-container bar-container">
+                    <canvas id="salesBarChart"></canvas>
+                </div>
+            </article>
+
+            <article class="panel" id="insights">
+                <div class="panel-header">
+                    <div>
+                        <h3>Business Insights</h3>
+                        <p>Highlights from your data</p>
+                    </div>
+                    <i class="fa-solid fa-lightbulb insight-icon"></i>
+                </div>
+
+                <div class="insight-list" id="insightList"></div>
+            </article>
+
+        </section>
+
+        <!-- Sales Table -->
+        <section class="panel table-panel" id="sales">
+            <div class="panel-header table-heading">
+                <div>
+                    <h3>Monthly Sales Report</h3>
+                    <p>Detailed breakdown of sales performance</p>
+                </div>
+                <span class="table-count" id="tableCount">4 records</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>MONTH</th>
+                            <th>SALES REVENUE</th>
+                            <th>CONTRIBUTION</th>
+                            <th>PERFORMANCE</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="salesTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <span>© 2026 DataVista Analytics</span>
+            <span>Built with <strong>Chart.js</strong></span>
+        </footer>
+
+    </main>
+</div>
+
+<script>
+    // ==========================================
+    // 1. SAMPLE DATA
+    // Replace these values with your real data.
+    // ==========================================
+
+    const allLabels = ['Jan', 'Feb', 'Mar', 'Apr'];
+    const allValues = [12000, 19000, 3000, 5000];
+
+    const chartColors = [
+        '#7966F5',
+        '#42A5F5',
+        '#32C997',
+        '#FFB454'
+    ];
+
+    const money = value => '$' + Number(value).toLocaleString('en-US', {
+        maximumFractionDigits: 0
+    });
+
+    let filteredLabels = [...allLabels];
+    let filteredValues = [...allValues];
+
+    // ==========================================
+    // 2. CURRENT DATE
+    // ==========================================
+
+    document.getElementById('currentDate').textContent =
+        new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+
+    // ==========================================
+    // 3. CHART DEFAULTS
+    // ==========================================
+
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.color = '#8490A5';
+
+    const commonTooltip = {
+        backgroundColor: '#182230',
+        titleColor: '#FFFFFF',
+        bodyColor: '#E5E7EB',
+        padding: 12,
+        cornerRadius: 8,
+        displayColors: true
+    };
+
+    // ==========================================
+    // 4. LINE CHART
+    // ==========================================
+
+    const lineChart = new Chart(
+        document.getElementById('salesLineChart'),
+        {
+            type: 'line',
+            data: {
+                labels: filteredLabels,
+                datasets: [{
+                    label: 'Sales Revenue',
+                    data: filteredValues,
+                    borderColor: '#7966F5',
+                    backgroundColor: 'rgba(121, 102, 245, 0.12)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: '#7966F5',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        ...commonTooltip,
+                        callbacks: {
+                            label: context =>
+                                ' Sales: ' + money(context.raw)
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        border: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        border: { display: false },
+                        grid: { color: '#EEF0F6' },
+                        ticks: {
+                            callback: value => '$' + (value / 1000) + 'k'
+                        }
+                    }
+                }
+            }
+        }
+    );
+
+    // ==========================================
+    // 5. DOUGHNUT CHART
+    // ==========================================
+
+    const doughnutChart = new Chart(
+        document.getElementById('salesDoughnutChart'),
+        {
+            type: 'doughnut',
+            data: {
+                labels: filteredLabels,
+                datasets: [{
+                    data: filteredValues,
+                    backgroundColor: chartColors,
+                    borderWidth: 4,
+                    borderColor: '#FFFFFF',
+                    hoverOffset: 8,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        ...commonTooltip,
+                        callbacks: {
+                            label: context =>
+                                ' ' + context.label + ': ' + money(context.raw)
+                        }
+                    }
+                }
+            }
+        }
+    );
+
+    // ==========================================
+    // 6. BAR CHART
+    // ==========================================
+
+    const barChart = new Chart(
+        document.getElementById('salesBarChart'),
+        {
+            type: 'bar',
+            data: {
+                labels: filteredLabels,
+                datasets: [{
+                    label: 'Sales',
+                    data: filteredValues,
+                    backgroundColor: chartColors,
+                    borderRadius: 7,
+                    borderSkipped: false,
+                    maxBarThickness: 48
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        ...commonTooltip,
+                        callbacks: {
+                            label: context =>
+                                ' Revenue: ' + money(context.raw)
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        border: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        border: { display: false },
+                        grid: { color: '#EEF0F6' },
+                        ticks: {
+                            callback: value => '$' + (value / 1000) + 'k'
+                        }
+                    }
+                }
+            }
+        }
+    );
+
+    // ==========================================
+    // 7. UPDATE KPI CARDS
+    // ==========================================
+
+    function updateKPIs(labels, values) {
+        const total = values.reduce((sum, value) => sum + value, 0);
+        const average = values.length ? total / values.length : 0;
+
+        document.getElementById('totalSales').textContent = money(total);
+        document.getElementById('avgSales').textContent = money(average);
+
+        if (!values.length) {
+            document.getElementById('bestMonth').textContent = '--';
+            document.getElementById('bestMonthValue').textContent = 'No data';
+            document.getElementById('growthRate').textContent = '--';
+            return;
+        }
+
+        const maxValue = Math.max(...values);
+        const bestIndex = values.indexOf(maxValue);
+
+        document.getElementById('bestMonth').textContent = labels[bestIndex];
+        document.getElementById('bestMonthValue').textContent =
+            money(maxValue) + ' in sales';
+
+        let growth = 0;
+
+        if (values.length > 1) {
+            const first = values[0];
+            const last = values[values.length - 1];
+
+            growth = first !== 0
+                ? ((last - first) / first) * 100
+                : null;
+        }
+
+        const growthElement = document.getElementById('growthRate');
+
+        growthElement.textContent = growth === null
+            ? 'N/A'
+            : (growth > 0 ? '+' : '') + growth.toFixed(1) + '%';
+
+        growthElement.style.color =
+            growth > 0 ? '#16A779' :
+            growth < 0 ? '#E05260' : '#182230';
+    }
+
+    // ==========================================
+    // 8. DOUGHNUT LEGEND
+    // ==========================================
+
+    function updateLegend(labels, values) {
+        const total = values.reduce((sum, value) => sum + value, 0);
+        const container = document.getElementById('distributionLegend');
+
+        container.innerHTML = labels.map((label, index) => {
+            const percentage = total ? (values[index] / total) * 100 : 0;
+
+            return `
+                <div class="legend-row">
+                    <div class="legend-name">
+                        <span class="legend-dot"
+                            style="background:${chartColors[index % chartColors.length]}">
+                        </span>
+                        <span>${label}</span>
+                    </div>
+                    <strong>${percentage.toFixed(1)}%</strong>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==========================================
+    // 9. BUSINESS INSIGHTS
+    // ==========================================
+
+    function updateInsights(labels, values) {
+        const container = document.getElementById('insightList');
+
+        if (!values.length) {
+            container.innerHTML = '<p>No data available.</p>';
+            return;
+        }
+
+        const total = values.reduce((sum, value) => sum + value, 0);
+        const bestIndex = values.indexOf(Math.max(...values));
+        const lowestIndex = values.indexOf(Math.min(...values));
+
+        let growthText = 'Not enough data to calculate growth.';
+
+        if (values.length > 1) {
+            const first = values[0];
+            const last = values[values.length - 1];
+
+            if (first === 0) {
+                growthText = 'Growth percentage cannot be calculated from a zero starting value.';
+            } else {
+                const growth = ((last - first) / first) * 100;
+
+                growthText = growth >= 0
+                    ? `Sales increased by ${growth.toFixed(1)}% from ${labels[0]} to ${labels[labels.length - 1]}.`
+                    : `Sales decreased by ${Math.abs(growth).toFixed(1)}% from ${labels[0]} to ${labels[labels.length - 1]}.`;
+            }
+        }
+
+        const insights = [
+            {
+                icon: 'fa-trophy',
+                color: 'green',
+                title: 'Top Performing Month',
+                text: `${labels[bestIndex]} recorded the highest sales at ${money(values[bestIndex])}.`
+            },
+            {
+                icon: 'fa-chart-line',
+                color: 'purple',
+                title: 'Sales Trend',
+                text: growthText
+            },
+            {
+                icon: 'fa-magnifying-glass-chart',
+                color: 'orange',
+                title: 'Sales Contribution',
+                text: total
+                    ? `${labels[bestIndex]} contributed ${(values[bestIndex] / total * 100).toFixed(1)}% of total sales.`
+                    : 'No sales recorded in this period.'
+            },
+            {
+                icon: 'fa-arrow-down-short-wide',
+                color: 'blue',
+                title: 'Lowest Performing Month',
+                text: `${labels[lowestIndex]} recorded ${money(values[lowestIndex])} in sales.`
+            }
+        ];
+
+        container.innerHTML = insights.map(item => `
+            <div class="insight-item">
+                <div class="insight-symbol ${item.color}">
+                    <i class="fa-solid ${item.icon}"></i>
+                </div>
+                <div class="insight-text">
+                    <strong>${item.title}</strong>
+                    <p>${item.text}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ==========================================
+    // 10. SALES TABLE
+    // ==========================================
+
+    function updateTable(labels, values) {
+        const total = values.reduce((sum, value) => sum + value, 0);
+
+        const maxValue = values.length ? Math.max(...values) : 0;
+        const tbody = document.getElementById('salesTableBody');
+
+        tbody.innerHTML = labels.map((label, index) => {
+            const value = values[index];
+            const contribution = total ? value / total * 100 : 0;
+            const barWidth = maxValue ? value / maxValue * 100 : 0;
+
+            const status = value === maxValue
+                ? '<span class="status best">Best</span>'
+                : '<span class="status normal">Recorded</span>';
+
+            return `
+                <tr>
+                    <td><strong>${label}</strong></td>
+                    <td>${money(value)}</td>
+                    <td>
+                        <div class="contribution">
+                            <div class="progress-track">
+                                <div class="progress-fill"
+                                    style="width:${contribution}%"></div>
+                            </div>
+                            <span>${contribution.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="table-bar-track">
+                            <div class="table-bar-fill"
+                                style="width:${barWidth}%"></div>
+                        </div>
+                    </td>
+                    <td>${status}</td>
+                </tr>
+            `;
+        }).join('');
+
+        document.getElementById('tableCount').textContent =
+            `${labels.length} records`;
+    }
+
+    // ==========================================
+    // 11. REFRESH ALL DASHBOARD COMPONENTS
+    // ==========================================
+
+    function refreshDashboard(labels, values) {
+        filteredLabels = labels;
+        filteredValues = values;
+
+        lineChart.data.labels = labels;
+        lineChart.data.datasets[0].data = values;
+        lineChart.update();
+
+        doughnutChart.data.labels = labels;
+        doughnutChart.data.datasets[0].data = values;
+        doughnutChart.update();
+
+        barChart.data.labels = labels;
+        barChart.data.datasets[0].data = values;
+        barChart.update();
+
+        updateKPIs(labels, values);
+        updateLegend(labels, values);
+        updateInsights(labels, values);
+        updateTable(labels, values);
+    }
+
+    // ==========================================
+    // 12. FILTER
+    // ==========================================
+
+    document.getElementById('periodFilter').addEventListener('change', event => {
+        const period = event.target.value;
+
+        if (period === 'first2') {
+            refreshDashboard(allLabels.slice(0, 2), allValues.slice(0, 2));
+        } else if (period === 'last2') {
+            refreshDashboard(allLabels.slice(-2), allValues.slice(-2));
+        } else {
+            refreshDashboard([...allLabels], [...allValues]);
+        }
+    });
+
+    // ==========================================
+    // 13. EXPORT CSV
+    // ==========================================
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        const rows = [
+            ['Month', 'Sales', 'Contribution (%)'],
+            ...filteredLabels.map((label, index) => {
+                const total = filteredValues.reduce((sum, value) => sum + value, 0);
+                const contribution = total
+                    ? (filteredValues[index] / total * 100).toFixed(2)
+                    : '0.00';
+
+                return [label, filteredValues[index], contribution];
+            })
+        ];
+
+        const csv = rows.map(row =>
+            row.map(value =>
+                `"${String(value).replace(/"/g, '""')}"`
+            ).join(',')
+        ).join('\r\n');
+
+        const blob = new Blob(['\uFEFF' + csv], {
+            type: 'text/csv;charset=utf-8;'
+        });
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = 'sales-report.csv';
+        link.click();
+
+        URL.revokeObjectURL(url);
+    });
+
+    // ==========================================
+    // 14. INITIALIZE DASHBOARD
+    // ==========================================
+
+    refreshDashboard([...allLabels], [...allValues]);
+</script>
+
+</body>
+</html>
